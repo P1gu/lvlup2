@@ -17,5 +17,10 @@ public class PlayableCharacter : CharacterBehaviour
 		{
 			Action1 ();
 		}
+
+		if(Input.GetButton("Fire2"))
+		{
+			Action2 ();
+		}
 	}
 }
