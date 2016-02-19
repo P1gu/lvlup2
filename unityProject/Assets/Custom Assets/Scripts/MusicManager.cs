@@ -8,29 +8,29 @@ public class MusicManager : MonoBehaviour
 
     public AudioClip firstPhase;
     [Range(0, 100)]
-    public int firstPhaseSoundLevel;
+    public int firstPhaseSoundLevel = 100;
 
     public AudioClip secondPhase;
     [Range(0, 100)]
-    public int secondPhaseSoundLevel;
+    public int secondPhaseSoundLevel = 100;
 
     public AudioClip victory;
     [Range(0, 100)]
-    public int victorySoundLevel;
+    public int victorySoundLevel = 100;
 
     public AudioClip gameOver;
     [Range(0, 100)]
-    public int gameOverSoundLevel;
+    public int gameOverSoundLevel = 100;
 
     public AudioClip menu;
     [Range(0, 100)]
-    public int menuSoundLevel;
+    public int menuSoundLevel = 100;
 
     public AudioSource currentAudioSource;
     public AudioSource freeAudioSource;
-    public float fadeDuration;
+    public float fadeDuration = 5;
     [Range(0, 100)]
-    public int soundLevel;
+    public int soundLevel = 100;
 
     public enum songs { FIRSTPHASE, SECONDPHASE, VICTORY, GAMEOVER, MENU, SILENCE };
     private AudioClip currentClip;
@@ -57,8 +57,9 @@ public class MusicManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Time.time - wait > 0 && !fadedOut1)
+        /*if(Time.time - wait > 0 && !fadedOut1)
         {
+            Debug.Log("test");
             fadedOut1 = true;
             crossFade(currentAudioSource, freeAudioSource, firstPhaseSoundLevel, firstPhase);
         }
