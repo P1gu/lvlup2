@@ -13,9 +13,9 @@ public class MusicManager : MonoBehaviour
     public enum songs { FIRSTPHASE, SECONDPHASE, VICTORY, GAMEOVER, MENU, SILENCE };
     private songs newSong;
 
-    float wait;
-    bool fadedOut1 = false;
-    bool fadedOut2 = false;
+    //float wait;
+    //bool fadedOut1 = false;
+    //bool fadedOut2 = false;
 
     // Use this for initialization
     void Start()
