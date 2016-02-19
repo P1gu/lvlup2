@@ -46,3 +46,4 @@ Thumbs.db
 
 # include meta files
 !*.*.meta
+!*.obj

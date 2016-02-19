@@ -10,7 +10,7 @@ public class PlayableCharacter : CharacterBehaviour
 		Move (Input.GetAxis ("Horizontal"));
 
 		if (Input.GetKeyDown (KeyCode.W)) {
-			Jump (1.0f);
+			Jump ();
 		}
 
 		if(Input.GetButton("Fire1"))
