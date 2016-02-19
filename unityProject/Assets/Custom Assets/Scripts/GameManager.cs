@@ -149,7 +149,8 @@ public class GameManager : MonoBehaviour {
 
     private void GererLeSbire() {
         lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Move(Input.GetAxis("Horizontal"));
-        lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Jump(Input.GetKey("space") ? 1 : 0);
+        if(Input.GetKey("space"))
+            lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Jump();
         if (Input.GetButtonDown("Fire1"))
             lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Action1();
         if (Input.GetButtonDown("Fire2"))
