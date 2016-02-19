@@ -17,10 +17,15 @@ public class GameManager : MonoBehaviour {
     public GameObject sbireMage;
     public GameObject sbireGuerrier;
 
+    public GameObject spawnSbire;
+
+
     EtatDuJeu etatDuJeu = EtatDuJeu.AvantPreparation;
 
     public int tempsDeLaPreparationEnSec = 30;
-    
+    private float tempRestantPrepartion=30;
+
+
     int lvl = 1;
 
     int positionDeLaSelection = 0;
@@ -55,6 +60,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private void AvantPreparation() {
+        tempRestantPrepartion = tempsDeLaPreparationEnSec;
         GenererLesAventuriersDuLvl();
         GenererLesSbiresDuLvl();
 
@@ -63,6 +69,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Preparation() {
+        sbireEnCours = 0;
         int swap2 = -1;
         bool select = Input.GetKey("space");
         bool left = Input.GetKeyDown("left");
@@ -78,10 +85,21 @@ public class GameManager : MonoBehaviour {
             SwapOrdreSbires(positionDeLaSelection, swap2);
             positionDeLaSelection = swap2;
         }
+
+        checkFinDelaPreparation();
+    }
+
+    private void checkFinDelaPreparation() {
+        tempRestantPrepartion -= Time.deltaTime;
+        if (tempRestantPrepartion < 0)
+        {
+            etatDuJeu = EtatDuJeu.EnCombat;
+            FairePopLeProchainSbire();
+        }
     }
 
     private void EnCombat() {
-
+      
     }
 
     private void FinDuCombat() {
@@ -121,9 +139,15 @@ public class GameManager : MonoBehaviour {
     }
 
     private void FairePopLeProchainSbire() {
-        //todo:
+        GameObject sbireEnCoursDeCombat = lesSbiresDuLvl[sbireEnCours];
+        placerSurLeSpawnSbire(sbireEnCoursDeCombat);
+        sbireEnCours++;
     }
 
+    private void placerSurLeSpawnSbire(GameObject sbire) {
+        sbire.transform.position = spawnSbire.transform.position;
+        sbire.transform.rotation = spawnSbire.transform.rotation;
+    }
 
     private void GenererLesSbiresDuLvl() {
         lesSbiresDuLvl = new List<GameObject>();
