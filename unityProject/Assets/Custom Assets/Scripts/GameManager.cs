@@ -16,9 +16,20 @@ public class GameManager : MonoBehaviour {
     public GameObject sbireMage;
     public GameObject sbireGuerrier;
 
+    public GameObject aventurierArcher;
+    public GameObject aventurierMage;
+    public GameObject aventurierGuerrier;
+
+    public GameObject bulleArcher;
+    public GameObject bulleMage;
+    public GameObject bulleAventurier;
+    public GameObject positionPremierBulle;
+
     public GameObject gui;
     
     public GameObject spawnSbire;
+
+    public GameObject spawnAventurier;
 
     private EtatDuJeu etatDuJeu = EtatDuJeu.AvantPreparation;
 
@@ -29,7 +40,7 @@ public class GameManager : MonoBehaviour {
 
     private int positionDeLaSelection = 0;
 
-    private int aventurierEnCombat = 0;
+    private int aventurierEnCours = 0;
     private List<GameObject> lesAventuriersDuLvl = new List<GameObject>();
 
     private int sbireEnCours = 0;
@@ -60,22 +71,31 @@ public class GameManager : MonoBehaviour {
     }
 
     private void AvantPreparation() {
-        
+        positionDeLaSelection = 0;
         tempRestantPrepartion = tempsDeLaPreparationEnSec;
         GenererLesAventuriersDuLvl();
         GenererLesSbiresDuLvl();
+        afficherLaProchaineVague();
 
+        sbireEnCours = -1;
+        aventurierEnCours = 0;
         EventManager.playPhase1Start();
         etatDuJeu =EtatDuJeu.Preparation;
     }
 
     private void Preparation() {
-        sbireEnCours = -1;
+        
         int swap2 = -1;
         bool select = Input.GetKey(KeyCode.Space);
-        bool left = Input.GetKeyDown(KeyCode.D);
-        bool right = Input.GetKeyDown(KeyCode.A);
+        bool right = Input.GetKeyDown(KeyCode.D);
+        bool left = Input.GetKeyDown(KeyCode.A);
+        bool skip = Input.GetKey(KeyCode.Q);
 
+
+
+        if (skip) {
+            tempRestantPrepartion = 0;
+        }
         if (left && select)
         {
             swap2 = positionDeLaSelection == 0 ? lesSbiresDuLvl.Count - 1 : positionDeLaSelection - 1;
@@ -105,7 +125,7 @@ public class GameManager : MonoBehaviour {
 
     private void afficherLesSbiresPourLaPreparation()
     {
-        int offset = 2;
+        int offset = -2;
         Vector3 v3 = spawnSbire.transform.position;
         GameObject sbire;
         for ( int i= lesSbiresDuLvl.Count-1; i >= 0;i-- ) {
@@ -132,6 +152,30 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    private void afficherLaProchaineVague() {
+        int offset = 0;
+        GameObject bulle=null;
+        foreach (GameObject go in lesAventuriersDuLvl) {
+            if (go.GetComponent<Archer>() != null)
+            {
+                 bulle = Instantiate(bulleArcher); 
+            }
+            else if (go.GetComponent<Guerrier>() != null)
+            {
+                bulle = Instantiate(bulleAventurier);
+            }
+            else if (go.GetComponent<Mage>() != null)
+            {
+                bulle = Instantiate(bulleMage);
+            }
+            
+            Vector3 v3= positionPremierBulle.transform.position;
+            v3.y += offset * 3;
+            bulle.transform.position = v3;
+            offset++;
+        }
+    }
+
     private void checkFinDelaPreparation() {
         tempRestantPrepartion -= Time.deltaTime;
         if (tempRestantPrepartion < 0)
@@ -139,18 +183,18 @@ public class GameManager : MonoBehaviour {
             etatDuJeu = EtatDuJeu.EnCombat;
             sortirLesSbires();
             FairePopLeProchainSbire();
+            FairePopLeProchainAventurier();
             EventManager.playPhase2Start();
         }
     }
 
     private void EnCombat() {
         GererLeSbire();
-        
     }
 
     private void GererLeSbire() {
         lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Move(Input.GetAxis("Horizontal"));
-        if(Input.GetKey("space"))
+        if(Input.GetButtonDown("Jump"))
             lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Jump();
         if (Input.GetButtonDown("Fire1"))
             lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Action1();
@@ -159,8 +203,14 @@ public class GameManager : MonoBehaviour {
     }
 
     private void FinDuCombat() {
-        //todo: clear les mobs
+        //todo: clear les sbires
+
+        foreach (GameObject go in lesSbiresDuLvl) {
+            DestroyImmediate(go);
+        }
+
         lvl++;
+        etatDuJeu=EtatDuJeu.AvantPreparation;
     }
 
     public void unSbireEstMort() {
@@ -169,7 +219,8 @@ public class GameManager : MonoBehaviour {
     }
 
     public void unAventurierEstMort() {
-        if (aventurierEnCombat < lesAventuriersDuLvl.Count)
+        aventurierEnCours++;
+        if (aventurierEnCours < lesAventuriersDuLvl.Count)
         {// il y a encore des ennemis
             FairePopLeProchainAventurier();
         }
@@ -180,7 +231,10 @@ public class GameManager : MonoBehaviour {
     }
 
     private void FairePopLeProchainAventurier() {
-        //todo:
+            GameObject aventurierEnCoursDeCombat = lesAventuriersDuLvl[aventurierEnCours];
+            placerSurLeSpawnAventurier(aventurierEnCoursDeCombat);
+            //todo remove in prod
+            Invoke("unAventurierEstMort", 16);
     }
 
     private void sortirLesSbires() {
@@ -188,7 +242,7 @@ public class GameManager : MonoBehaviour {
         foreach (GameObject sbire in lesSbiresDuLvl)
         {
             Vector3 v3 = spawnSbire.transform.position;
-            v3.x += -40+offset;
+            v3.x += +40+offset;
 
             sbire.GetComponent<Rigidbody>().isKinematic = true;
 
@@ -209,7 +263,7 @@ public class GameManager : MonoBehaviour {
             placerSurLeSpawnSbire(sbireEnCoursDeCombat);
 
             //todo remove in prod
-            Invoke("unSbireEstMort", 5);
+            //Invoke("unSbireEstMort", 5);
         }
         else {
             Application.LoadLevel("GameOver");
@@ -233,15 +287,31 @@ public class GameManager : MonoBehaviour {
 
     }
 
+
+    private void placerSurLeSpawnAventurier(GameObject sbire)
+    {
+        sbire.transform.position = spawnAventurier.transform.position;
+        sbire.transform.rotation = spawnAventurier.transform.rotation;
+
+        Vector3 scale = sbire.transform.localScale;
+
+        sbire.GetComponent<Rigidbody>().isKinematic = false;
+
+        scale.y = 2;
+        scale.x = 2;
+        scale.z = 2;
+        sbire.transform.localScale = scale;
+
+    }
+    
     private void GenererLesSbiresDuLvl() {
         lesSbiresDuLvl = new List<GameObject>();
         GameObject leSbire =null ;
         for (int i = 0; i < (nbrDeSbireAuLvl1 + lvl - 1) % maxSbiresParLvl;i++) {
-            int type= Random.Range(0, 2);
-            switch (type) { //todo: definir la position
+            int type= Random.Range(0, 3);
+            switch (type) {
                 case 0:
                     leSbire = Instantiate(sbireArcher);
-                    
                     break;
                 case 1:
                     leSbire=(Instantiate(sbireMage));
@@ -255,12 +325,67 @@ public class GameManager : MonoBehaviour {
     }
 
     private void GenererLesAventuriersDuLvl() {
-        calculerNbrDeVieTotalAventurierEnFonctionDuLvl();
+        lesAventuriersDuLvl = new List<GameObject>();
+        //4 aventurier par pallier max premier palier c'est 1
+        //int palier = (lvl / 16) + 1;
+        int nbrDePointsDeVieTotal = lvl;
+        int lvlDuPalier = (lvl-1 % 16)+1;
+        int nbrAventurier=0;
+        switch (lvlDuPalier) { 
+            case 16:
+            case 15:
+            case 14:
+            case 13:
+                nbrAventurier = 4;
+                break;
 
+            case 12:
+            case 11:
+            case 10:
+            case 9:
+                nbrAventurier = Random.Range(3, 5);//nbr 3 -4
+                break;
+            case 8:
+            case 7:
+            case 6:
+            case 5:
+                nbrAventurier = Random.Range(2, 5);//nb 2-4
+                break;
+            case 4:
+                nbrAventurier = Random.Range(1, 5);//1-4
+                break;
+            case 3:
+                nbrAventurier = Random.Range(1, 4);//1-3
+                break;
+            case 2:
+                nbrAventurier = Random.Range(1, 3);//1-2
+                break;
+            case 1:
+                nbrAventurier = 1;// 1
+                break;
+        }
 
-    }
+        GameObject aventurier = null;
+        for (int i = 0; i < nbrAventurier; i++)
+        {
+            int type = Random.Range(0, 3);
+            switch (type)
+            {
+                case 0:
+                    aventurier = Instantiate(aventurierArcher);
+                    break;
+                case 1:
+                    aventurier = (Instantiate(aventurierMage));
+                    break;
+                case 2:
+                    aventurier = (Instantiate(aventurierGuerrier));
+                    break;
+            }
+            aventurier.GetComponent<Rigidbody>().isKinematic = true;
+            aventurier.GetComponent<CharacterBehaviour>().health= Random.Range(1, 5);
+            lesAventuriersDuLvl.Add(aventurier);
+        }
 
-    private void calculerNbrDeVieTotalAventurierEnFonctionDuLvl() {
 
     }
 
