@@ -12,6 +12,16 @@ public class EventManager : MonoBehaviour {
         OnPhase2Start();
     }
 
+    public static void SbireKilled()
+    {
+        OnUnSbireEstMort();
+    }
+
+    public static void AventurierKilled()
+    {
+        OnUnAventurierEstMort();
+    }
+
 
     public delegate void UnSbireEstMort();
     public static event UnSbireEstMort OnUnSbireEstMort;

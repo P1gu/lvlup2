@@ -15,12 +15,17 @@ public class CharacterBehaviour : MonoBehaviour
 	private Rigidbody rb;
 	private IActions actions;
 	private Animator animator;
+    private CapsuleCollider cc;
+    private SpriteRenderer sr;
+
 
 	protected void Start ()
 	{
 		rb = GetComponent<Rigidbody> ();
 		actions = GetComponent<IActions> ();
 		animator = GetComponent<Animator> ();
+        cc = GetComponent<CapsuleCollider>();
+        sr = GetComponent<SpriteRenderer > ();
 		dead = false;
 		inJump = false;
 	}
@@ -28,7 +33,11 @@ public class CharacterBehaviour : MonoBehaviour
 	protected void Update ()
     {
 		if (dead) {
-			
+            Color c = sr.color;
+            c.a -= 0.005f;
+            sr.color = c;
+            rb.velocity = Vector3.up;
+            
 		} else if (health <= 0 && !dead) {
 			Kill ();
 		}
@@ -40,8 +49,24 @@ public class CharacterBehaviour : MonoBehaviour
 	public void Kill() {
 		dead = true;
 		animator.SetBool ("Dead", true);
+        cc.enabled = false;
+        
 		deadTime = Time.time;
 		Destroy (this.gameObject, 10.0f);
+
+		if (tag == "Aventurier") {
+			EventManager.AventurierKilled ();
+			Debug.Log ("Avent. killed");
+		} else if (tag == "Sbire") {
+			EventManager.SbireKilled ();
+			Debug.Log ("Sbire killed");
+		} else {
+			Debug.Log ("Unknow killed");
+		}
+	}
+
+	public virtual string GetTeam() {
+		return "Unknow";
 	}
 
     private bool lastDirectionRight=true;

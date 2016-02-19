@@ -49,8 +49,9 @@ public class GameManager : MonoBehaviour {
     private int nbrDeVieTotalAventurier = 1; 
 
 	void Start () {
-	    
-	}
+        EventManager.OnUnAventurierEstMort += unAventurierEstMort;
+        EventManager.OnUnSbireEstMort += unSbireEstMort;
+    }
 	
 	void Update () {
        
@@ -138,12 +139,12 @@ public class GameManager : MonoBehaviour {
             // permet de mettre en evidence le personnage selectoinner
             Vector3 scale = sbire.transform.localScale;
             if (positionDeLaSelection == i) {
-                scale.x = 3;
+                scale.x = -3;
                 scale.y = 3;
                 scale.z = 3;
             }
             else {
-                scale.x = 2;
+                scale.x = -2;
                 scale.y = 2;
                 scale.z = 2;
             }
@@ -233,8 +234,6 @@ public class GameManager : MonoBehaviour {
     private void FairePopLeProchainAventurier() {
             GameObject aventurierEnCoursDeCombat = lesAventuriersDuLvl[aventurierEnCours];
             placerSurLeSpawnAventurier(aventurierEnCoursDeCombat);
-            //todo remove in prod
-            Invoke("unAventurierEstMort", 16);
     }
 
     private void sortirLesSbires() {
@@ -261,15 +260,10 @@ public class GameManager : MonoBehaviour {
         {
             GameObject sbireEnCoursDeCombat = lesSbiresDuLvl[sbireEnCours];
             placerSurLeSpawnSbire(sbireEnCoursDeCombat);
-
-            //todo remove in prod
-            //Invoke("unSbireEstMort", 5);
         }
         else {
             Application.LoadLevel("GameOver");
         }
-
-       
     }
 
     private void placerSurLeSpawnSbire(GameObject sbire) {
