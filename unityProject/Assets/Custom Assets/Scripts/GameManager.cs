@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
-
+using UnityEngine.UI;
+using UnityStandardAssets.Characters.ThirdPerson;
 
 public class GameManager : MonoBehaviour {
     private enum EtatDuJeu
@@ -12,37 +12,38 @@ public class GameManager : MonoBehaviour {
     public int maxSbiresParLvl = 10;
     public int nbrDeSbireAuLvl1 = 4;
 
-
     public GameObject sbireArcher;
     public GameObject sbireMage;
     public GameObject sbireGuerrier;
 
+    public GameObject gui;
+    public GameObject modelTextGUI;
+
     public GameObject spawnSbire;
 
+    private EtatDuJeu etatDuJeu = EtatDuJeu.AvantPreparation;
 
-    EtatDuJeu etatDuJeu = EtatDuJeu.AvantPreparation;
+    public int tempsDeLaPreparationEnSec = 4;
+    private float tempRestantPrepartion=0;
 
-    public int tempsDeLaPreparationEnSec = 30;
-    private float tempRestantPrepartion=30;
+    private int lvl = 1;
 
+    private int positionDeLaSelection = 0;
 
-    int lvl = 1;
+    private int aventurierEnCombat = 0;
+    private List<GameObject> lesAventuriersDuLvl = new List<GameObject>();
 
-    int positionDeLaSelection = 0;
+    private int sbireEnCours = 0;
+    private List<GameObject> lesSbiresDuLvl = new List<GameObject>();
 
-    int aventurierEnCombat = 0;
-    List<GameObject> lesAventuriersDuLvl = new List<GameObject>();
-
-    int sbireEnCours = 0;
-    List<GameObject> lesSbiresDuLvl = new List<GameObject>();
-
-    int nbrDeVieTotalAventurier = 1; 
+    private int nbrDeVieTotalAventurier = 1; 
 
 	void Start () {
 	    
 	}
 	
 	void Update () {
+       
         switch (etatDuJeu) {
             case EtatDuJeu.AvantPreparation:
                 AvantPreparation();
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private void AvantPreparation() {
+        
         tempRestantPrepartion = tempsDeLaPreparationEnSec;
         GenererLesAventuriersDuLvl();
         GenererLesSbiresDuLvl();
@@ -71,22 +73,64 @@ public class GameManager : MonoBehaviour {
     private void Preparation() {
         sbireEnCours = 0;
         int swap2 = -1;
-        bool select = Input.GetKey("space");
-        bool left = Input.GetKeyDown("left");
-        bool right = Input.GetKeyDown("right");
+        bool select = Input.GetKey(KeyCode.Space);
+        bool left = Input.GetKeyDown(KeyCode.D);
+        bool right = Input.GetKeyDown(KeyCode.A);
 
-        if (left && select) {
+        if (left && select)
+        {
             swap2 = positionDeLaSelection == 0 ? lesSbiresDuLvl.Count - 1 : positionDeLaSelection - 1;
-        } else if (right && select) {
+        }
+        else if (right && select)
+        {
             swap2 = positionDeLaSelection == lesSbiresDuLvl.Count - 1 ? 0 : positionDeLaSelection + 1;
         }
+        else if (left)
+        {
+            positionDeLaSelection = positionDeLaSelection == 0 ? lesSbiresDuLvl.Count - 1 : positionDeLaSelection - 1;
+        }
+        else if (right) {
+            positionDeLaSelection = positionDeLaSelection == lesSbiresDuLvl.Count - 1 ? 0 : positionDeLaSelection + 1;
+        }
 
-        if (swap2 > -1) { 
+        if (swap2 > -1) {
+            Debug.Log("Swap - position "+positionDeLaSelection+" swap2 "+swap2);
             SwapOrdreSbires(positionDeLaSelection, swap2);
             positionDeLaSelection = swap2;
         }
 
+        afficherLesSbiresPourLaPreparation();
+
         checkFinDelaPreparation();
+    }
+
+    private void afficherLesSbiresPourLaPreparation()
+    {
+        int offset = 2;
+        Vector3 v3 = spawnSbire.transform.position;
+        GameObject sbire;
+        for ( int i= lesSbiresDuLvl.Count-1; i >= 0;i-- ) {
+            sbire = lesSbiresDuLvl[i];
+            v3.x += offset;
+            
+            sbire.transform.position = v3;
+            sbire.transform.rotation = spawnSbire.transform.rotation;
+
+            // permet de mettre en evidence le personnage selectoinner
+            Vector3 scale = sbire.transform.localScale;
+            if (positionDeLaSelection == i) {
+                scale.x = 3;
+                scale.y = 3;
+                scale.z = 3;
+            }
+            else {
+                scale.x = 2;
+                scale.y = 2;
+                scale.z = 2;
+            }
+            sbire.transform.localScale = scale;
+
+        }
     }
 
     private void checkFinDelaPreparation() {
@@ -94,19 +138,29 @@ public class GameManager : MonoBehaviour {
         if (tempRestantPrepartion < 0)
         {
             etatDuJeu = EtatDuJeu.EnCombat;
+            sortirLesSbires();
             FairePopLeProchainSbire();
         }
     }
 
     private void EnCombat() {
-      
+        //GererLeSbire();
+        
+    }
+
+    private void GererLeSbire() {
+        lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Move(Input.GetAxis("Horizontal"));
+        lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Jump(Input.GetKey("space") ? 1 : 0);
+        if (Input.GetButtonDown("fire1"))
+            lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Action1(Input.mousePosition);
+        if (Input.GetButtonDown("fire2"))
+            lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Action2(Input.mousePosition);
     }
 
     private void FinDuCombat() {
         //todo: clear les mobs
         lvl++;
     }
-
 
     public void unSbireEstMort() {
         if (sbireEnCours < lesSbiresDuLvl.Count)
@@ -132,10 +186,21 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-
-
     private void FairePopLeProchainAventurier() {
         //todo:
+    }
+
+    private void sortirLesSbires() {
+        int offset = 0;
+        foreach (GameObject sbire in lesSbiresDuLvl)
+        {
+            Vector3 v3 = spawnSbire.transform.position;
+            v3.x += -40+offset;
+
+            sbire.transform.position = v3;
+            sbire.transform.rotation = spawnSbire.transform.rotation;
+            offset += 2;
+        }
     }
 
     private void FairePopLeProchainSbire() {
@@ -147,23 +212,41 @@ public class GameManager : MonoBehaviour {
     private void placerSurLeSpawnSbire(GameObject sbire) {
         sbire.transform.position = spawnSbire.transform.position;
         sbire.transform.rotation = spawnSbire.transform.rotation;
+
+        sbire.GetComponent<ThirdPersonUserControl>().enabled = true;
+        sbire.GetComponent<Rigidbody>().isKinematic = false;
+
+        Vector3 scale = sbire.transform.localScale;
+        scale.x = 2;
+        scale.y = 2;
+        scale.z = 2;
+        sbire.transform.localScale = scale;
     }
 
     private void GenererLesSbiresDuLvl() {
         lesSbiresDuLvl = new List<GameObject>();
+        GameObject leSbire =null ;
         for (int i = 0; i < (nbrDeSbireAuLvl1 + lvl - 1) % maxSbiresParLvl;i++) {
             int type= Random.Range(0, 2);
             switch (type) { //todo: definir la position
                 case 0:
-                    lesSbiresDuLvl.Add(Instantiate(sbireArcher));
+                    leSbire = Instantiate(sbireArcher);
+                    
                     break;
                 case 1:
-                    lesSbiresDuLvl.Add(Instantiate(sbireMage));
+                    leSbire=(Instantiate(sbireMage));
                     break;
                 case 2:
-                    lesSbiresDuLvl.Add(Instantiate(sbireGuerrier));
+                    leSbire=(Instantiate(sbireGuerrier));
                     break;
             }
+            lesSbiresDuLvl.Add(leSbire);
+            leSbire.GetComponent<ThirdPersonUserControl>().enabled = false;
+            leSbire.GetComponent<Rigidbody>().isKinematic = true;
+            GameObject txt = Instantiate(modelTextGUI);
+            txt.GetComponent<Text>().text = "You "+(i+1);
+            txt.GetComponent<FollowObject>().objectToFollow = leSbire.transform;
+            txt.transform.parent = gui.transform;
         }
     }
 
@@ -172,8 +255,10 @@ public class GameManager : MonoBehaviour {
     }
 
     public void SwapOrdreSbires(int s1, int s2) {
-        GameObject tmp = lesSbiresDuLvl[s1];
-        lesSbiresDuLvl[s1] = lesSbiresDuLvl[s2];
-        lesAventuriersDuLvl[s2] = tmp;
+        List<GameObject> lesSbireTmp = lesSbiresDuLvl;
+        GameObject tmp = lesSbireTmp[s1];
+        lesSbireTmp[s1] = lesSbireTmp[s2];
+        lesSbireTmp[s2] = tmp;
+        lesSbiresDuLvl = lesSbireTmp;
     }
 }
