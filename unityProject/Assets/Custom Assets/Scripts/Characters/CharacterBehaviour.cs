@@ -42,6 +42,20 @@ public class CharacterBehaviour : MonoBehaviour
 		animator.SetBool ("Dead", true);
 		deadTime = Time.time;
 		Destroy (this.gameObject, 10.0f);
+
+		if (tag == "Aventurier") {
+			EventManager.AventurierKilled ();
+			Debug.Log ("Avent. killed");
+		} else if (tag == "Sbire") {
+			EventManager.SbireKilled ();
+			Debug.Log ("Sbire killed");
+		} else {
+			Debug.Log ("Unknow killed");
+		}
+	}
+
+	public virtual string GetTeam() {
+		return "Unknow";
 	}
 
     private bool lastDirectionRight=true;

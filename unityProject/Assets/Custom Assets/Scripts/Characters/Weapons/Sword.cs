@@ -15,8 +15,7 @@ public class Sword : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
-		Debug.Log (other.name);
-		if (other.tag == "Dammagable") {
+		if (this.gameObject.transform.parent.tag == "Sbire" && other.tag == "Aventurier" || this.gameObject.transform.parent.tag == "Aventurier" && other.tag == "Sbire") {
 			other.GetComponent<CharacterBehaviour> ().health -= dammage;
 		}
 	}

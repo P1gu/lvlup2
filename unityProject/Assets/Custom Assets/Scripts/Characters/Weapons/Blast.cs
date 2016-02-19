@@ -4,21 +4,28 @@ using System.Collections;
 public class Blast : MonoBehaviour
 {
 	public int dammage;
+	public float blastTime;
 
-	public void Start() {
-
+	void Start() {
+		Vector3 scale = transform.localScale;
+		scale.x = Direction;
+		transform.localScale = scale;
+		Destroy (this.gameObject, blastTime);
 	}
 
-	public void Update() {
-
+	void Update() {
+		
 	}
 
 	void OnTriggerEnter(Collider other)
 	{
 		Debug.Log (other.name);
-		if (other.tag == "Dammagable") {
+		if (this.transform.parent.tag == "Sbire" && other.tag == "Aventurier" || this.transform.parent.tag == "Aventurier" && other.tag == "Sbire") {
 			other.GetComponent<CharacterBehaviour> ().health -= dammage;
 		}
 	}
+
+	public float Direction { get; set;}
+	public Mage Owner { get; set;}
 }
 

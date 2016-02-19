@@ -39,9 +39,8 @@ public class Fleche : Item
 		Destroy (this.gameObject, 5.0f);
 		transform.SetParent (other.transform);
 		cc.enabled = false;
-		if (other.tag == "Dammagable") {
+		if (this.Owner.tag == "Sbire" && other.tag == "Aventurier" || this.Owner.tag == "Aventurier" && other.tag == "Sbire") {
 			other.GetComponent<CharacterBehaviour> ().health -= dammage;
-			Debug.Log ("Hit");
 		}
 	}
 
