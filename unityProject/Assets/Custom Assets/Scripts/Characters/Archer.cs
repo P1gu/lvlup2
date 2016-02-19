@@ -9,7 +9,6 @@ public class Archer : MonoBehaviour, IActions
 	public float shootAngle;
 	public float shootForce;
 
-
 	private float fireTime;
 	private CharacterBehaviour cb;
 	private Animator animator;
