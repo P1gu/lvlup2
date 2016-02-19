@@ -255,8 +255,12 @@ public class GameManager : MonoBehaviour {
     }
 
     private void GenererLesAventuriersDuLvl() {
-        //todo:
+        calculerNbrDeVieTotalAventurierEnFonctionDuLvl();
 
+
+    }
+
+    private void calculerNbrDeVieTotalAventurierEnFonctionDuLvl() {
 
     }
 
