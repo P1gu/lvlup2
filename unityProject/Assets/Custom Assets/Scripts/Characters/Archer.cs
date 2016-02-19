@@ -6,42 +6,47 @@ public class Archer : MonoBehaviour, IActions
 	public GameObject flecheObject;
 	public Transform flecheSpawner;
 	public float fireRate;
+	public float shootAngle;
+	public float shootForce;
+	public Animator animator;
 
 	private float fireTime;
+	private CharacterBehaviour cb;
 
 	void Start()
     {
+		cb = GetComponent<CharacterBehaviour> ();
 		fireTime = 0.0f;
     }
 
 	void Update()
     {
-		if(Input.GetKey(KeyCode.Space))
-		{
-			Vector3 direction = Vector3.right + Vector3.up;
-
-			TirerFleche (direction.normalized);
-		}
+		
     }
 
 	void TirerFleche(Vector3 direction)
 	{
+		GameObject fleche = Instantiate (flecheObject, flecheSpawner.position, flecheSpawner.rotation) as GameObject;
+
+		fleche.GetComponent<Fleche> ().Direction = direction;
+		fleche.GetComponent<Fleche> ().Force = shootForce;
+		fleche.GetComponent<Fleche> ().Owner = this;
+	}
+
+	public void Action1()
+	{
 		if (Time.time - fireTime > fireRate) {
 			
-			GameObject fleche = Instantiate (flecheObject, flecheSpawner.position, flecheSpawner.rotation) as GameObject;
-			fleche.GetComponent<Fleche> ().Direction = direction;
-			fleche.GetComponent<Fleche> ().Force = 10.0f;
+			Vector3 direction = Vector3.zero;
+			direction.x = Mathf.Cos (Mathf.Deg2Rad * shootAngle) * cb.direction;
+			direction.y = Mathf.Sin (Mathf.Deg2Rad * shootAngle);
+			TirerFleche (direction);
 
 			fireTime = Time.time;
 		}
 	}
 
-	public void Action1(Vector3 mousePosition)
-	{
-		TirerFleche (mousePosition - transform.position);
-	}
-
-	public void Action2(Vector3 mousePosition)
+	public void Action2()
 	{
 		// TODO : Action 2 de l'archer.
 	}
