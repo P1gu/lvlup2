@@ -7,20 +7,22 @@ public class CharacterBehaviour : MonoBehaviour
 	public float maxSpeed;
 	public float maxHeight;
 	public float direction;
-	public Animator animator;
 
 	private bool dead;
 	private float deadTime;
+	private bool inJump;
 
 	private Rigidbody rb;
 	private IActions actions;
-
+	private Animator animator;
 
 	protected void Start ()
 	{
 		rb = GetComponent<Rigidbody> ();
 		actions = GetComponent<IActions> ();
+		animator = GetComponent<Animator> ();
 		dead = false;
+		inJump = false;
 	}
 	
 	protected void Update ()
@@ -30,14 +32,16 @@ public class CharacterBehaviour : MonoBehaviour
 		} else if (health <= 0 && !dead) {
 			Kill ();
 		}
-
+			
 		animator.SetFloat ("Speed", Mathf.Abs(rb.velocity.x));
+		animator.SetFloat ("Vertical_Speed", rb.velocity.y);
 
-		Debug.Log (animator);
+		//Debug.Log (animator);
 	}
 
 	public void Kill() {
 		dead = true;
+		animator.SetBool ("Dead", true);
 		deadTime = Time.time;
 		Destroy (this.gameObject, 10.0f);
 	}
@@ -59,11 +63,23 @@ public class CharacterBehaviour : MonoBehaviour
 		transform.localScale = scale;
 	}
 
-	public void Jump (float magnitude)
+	public void Jump ()
+	{
+		if (!inJump) {
+			animator.SetTrigger ("Jump");
+			inJump = true;
+		}
+	}
+
+	public void JumpInAnim ()
 	{
 		Vector3 velo = rb.velocity;
-		velo.y += magnitude * maxHeight;
+		velo.y += maxHeight;
 		rb.velocity = velo;
+	}
+
+	public void Land() {
+		inJump = false;
 	}
 
 	public void Action1 ()

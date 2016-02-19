@@ -8,14 +8,16 @@ public class Archer : MonoBehaviour, IActions
 	public float fireRate;
 	public float shootAngle;
 	public float shootForce;
-	public Animator animator;
+
 
 	private float fireTime;
 	private CharacterBehaviour cb;
+	private Animator animator;
 
 	void Start()
     {
 		cb = GetComponent<CharacterBehaviour> ();
+		animator = GetComponent<Animator> ();
 		fireTime = 0.0f;
     }
 
@@ -24,9 +26,13 @@ public class Archer : MonoBehaviour, IActions
 		
     }
 
-	void TirerFleche(Vector3 direction)
+	void TirerFleche()
 	{
 		GameObject fleche = Instantiate (flecheObject, flecheSpawner.position, flecheSpawner.rotation) as GameObject;
+
+		Vector3 direction = Vector3.zero;
+		direction.x = Mathf.Cos (Mathf.Deg2Rad * shootAngle) * cb.direction;
+		direction.y = Mathf.Sin (Mathf.Deg2Rad * shootAngle);
 
 		fleche.GetComponent<Fleche> ().Direction = direction;
 		fleche.GetComponent<Fleche> ().Force = shootForce;
@@ -36,12 +42,7 @@ public class Archer : MonoBehaviour, IActions
 	public void Action1()
 	{
 		if (Time.time - fireTime > fireRate) {
-			
-			Vector3 direction = Vector3.zero;
-			direction.x = Mathf.Cos (Mathf.Deg2Rad * shootAngle) * cb.direction;
-			direction.y = Mathf.Sin (Mathf.Deg2Rad * shootAngle);
-			TirerFleche (direction);
-
+			animator.SetTrigger ("Shoot");
 			fireTime = Time.time;
 		}
 	}
