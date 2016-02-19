@@ -3,22 +3,19 @@ using System.Collections;
 
 public class PlayableCharacter : CharacterBehaviour
 {
-	public static int currentSbireID;
+	protected void Update ()
+	{
+		base.Update ();
 
-	public void Move (float direction)
-	{
-		
-	}
-	public void Jump (float magnitude)
-	{
-		
-	}
-	public void Action1 (Vector3 mousePosition)
-	{
-		
-	}
-	public void Action2 (Vector3 mousePosition)
-	{
-		
+		Move (Input.GetAxis ("Horizontal"));
+
+		if (Input.GetKeyDown (KeyCode.W)) {
+			Jump (1.0f);
+		}
+
+		if(Input.GetButton("Fire1"))
+		{
+			Action1 ();
+		}
 	}
 }

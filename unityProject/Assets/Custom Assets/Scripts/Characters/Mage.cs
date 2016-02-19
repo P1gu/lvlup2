@@ -13,12 +13,12 @@ public class Mage : MonoBehaviour, IActions
 		
 	}
 
-	public void Action1(Vector3 mousePosition)
+	public void Action1()
 	{
 
 	}
 
-	public void Action2(Vector3 mousePosition)
+	public void Action2()
 	{
 
 	}
