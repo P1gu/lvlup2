@@ -118,14 +118,14 @@ public class GameManager : MonoBehaviour {
             // permet de mettre en evidence le personnage selectoinner
             Vector3 scale = sbire.transform.localScale;
             if (positionDeLaSelection == i) {
+                scale.x = 3;
+                scale.y = 3;
+                scale.z = 3;
+            }
+            else {
                 scale.x = 2;
                 scale.y = 2;
                 scale.z = 2;
-            }
-            else {
-                scale.x = 1;
-                scale.y = 1;
-                scale.z = 1;
             }
             sbire.transform.localScale = scale;
 
@@ -189,9 +189,13 @@ public class GameManager : MonoBehaviour {
             Vector3 v3 = spawnSbire.transform.position;
             v3.x += -40+offset;
 
+            sbire.GetComponent<Rigidbody>().isKinematic = true;
+
             sbire.transform.position = v3;
             sbire.transform.rotation = spawnSbire.transform.rotation;
             offset += 2;
+
+
         }
     }
 
@@ -217,14 +221,15 @@ public class GameManager : MonoBehaviour {
         sbire.transform.position = spawnSbire.transform.position;
         sbire.transform.rotation = spawnSbire.transform.rotation;
 
-        //sbire.GetComponent<ThirdPersonUserControl>().enabled = true;
+        Vector3 scale = sbire.transform.localScale;
+
         sbire.GetComponent<Rigidbody>().isKinematic = false;
 
-        Vector3 scale = sbire.transform.localScale;
-        scale.x = 1;
-        scale.y = 1;
-        scale.z = 1;
+        scale.y = 2;
+        scale.x = 2;
+        scale.z = 2;
         sbire.transform.localScale = scale;
+
     }
 
     private void GenererLesSbiresDuLvl() {
@@ -244,15 +249,14 @@ public class GameManager : MonoBehaviour {
                     leSbire=(Instantiate(sbireGuerrier));
                     break;
             }
-            lesSbiresDuLvl.Add(leSbire);
-            //leSbire.GetComponent<ThirdPersonUserControl>().enabled = false;
-            leSbire.GetComponent<Rigidbody>().isKinematic = true;
-           
+            lesSbiresDuLvl.Add(leSbire);           
         }
     }
 
     private void GenererLesAventuriersDuLvl() {
         //todo:
+
+
     }
 
     public void SwapOrdreSbires(int s1, int s2) {
