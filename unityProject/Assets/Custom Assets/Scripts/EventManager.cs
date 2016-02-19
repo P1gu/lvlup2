@@ -3,6 +3,16 @@ using System.Collections;
 
 public class EventManager : MonoBehaviour {
 
+    public static void playPhase1Start() {
+        OnPhase1Start();
+    }
+
+    public static void playPhase2Start()
+    {
+        OnPhase2Start();
+    }
+
+
     public delegate void UnSbireEstMort();
     public static event UnSbireEstMort OnUnSbireEstMort;
 
