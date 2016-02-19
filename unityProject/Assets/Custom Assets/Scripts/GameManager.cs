@@ -169,8 +169,7 @@ public class GameManager : MonoBehaviour {
             
         }
         else {
-            //GAME OVER
-            //todo:changer de scene
+            Application.LoadLevel("GameOver");
         }
 
     }
@@ -206,6 +205,9 @@ public class GameManager : MonoBehaviour {
     private void FairePopLeProchainSbire() {
         GameObject sbireEnCoursDeCombat = lesSbiresDuLvl[sbireEnCours];
         placerSurLeSpawnSbire(sbireEnCoursDeCombat);
+
+        Invoke("unSbireEstMort", 5);
+
         sbireEnCours++;
     }
 
