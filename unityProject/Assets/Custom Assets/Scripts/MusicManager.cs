@@ -8,20 +8,26 @@ public class MusicManager : MonoBehaviour
 
     public AudioSource currentAudioSource;
     public AudioSource freeAudioSource;
-    public float fadeDuration = 2;
+    public float fadeDuration;
+    [Range(0, 100)]
+    public int soundLevel;
 
     public enum songs { FIRSTPHASE, SECONDPHASE, VICTORY, GAMEOVER, MENU, SILENCE };
     private songs newSong;
 
-    //float wait;
-    //bool fadedOut1 = false;
-    //bool fadedOut2 = false;
+    float wait;
+    bool fadedOut1 = false;
+    bool fadedOut2 = false;
 
     // Use this for initialization
     void Start()
     {
-        //wait = Time.time;
-        //playFirstPhaseMusic();
+        wait = Time.time;
+        playFirstPhaseMusic();
+        soundLevel = 100;
+
+        currentAudioSource.loop = true;
+        freeAudioSource.loop = true;
 
         EventManager.OnPhase1Start += playFirstPhaseMusic;
         EventManager.OnPhase2Start += playSecondPhaseMusic;
@@ -32,15 +38,15 @@ public class MusicManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*if(Time.time - wait > 3 && !fadedOut1)
+        if(Time.time - wait > 0 && !fadedOut1)
         {
             fadedOut1 = true;
-            crossFade(currentAudioSource, freeAudioSource, songs.SECONDPHASE);
+            crossFade(currentAudioSource, freeAudioSource, songs.FIRSTPHASE);
         }
-        if (Time.time - wait > 10 && !fadedOut2)
+        /*if (Time.time - wait > 7 && !fadedOut2)
         {
             fadedOut2 = true;
-            crossFade(currentAudioSource, null, songs.SILENCE);
+            crossFade(currentAudioSource, freeAudioSource, songs.SECONDPHASE);
         }*/
 
     }
@@ -100,9 +106,9 @@ public class MusicManager : MonoBehaviour
         float start = Time.time;
 
         
-        while (tempRef.volume < 1F)
+        while (tempRef.volume < soundLevel/100)
         {
-            tempRef.volume = Mathf.Lerp(0F, 1F, Mathf.SmoothStep(0F, 1F, (Time.time - start) / fadeDuration));
+            tempRef.volume = Mathf.SmoothStep(0F, soundLevel/100, (Time.time - start) / fadeDuration);
             yield return 0;
         }
     }
@@ -115,7 +121,7 @@ public class MusicManager : MonoBehaviour
         float tempVolume = tempRef.volume;
         while (tempRef.volume > 0F)
         {
-            tempRef.volume = Mathf.Lerp(tempVolume, 0F, Mathf.SmoothStep(0F, 1F, (Time.time - start) / fadeDuration));
+            tempRef.volume = Mathf.SmoothStep(soundLevel/100, 0F, (Time.time - start) / fadeDuration);
             yield return 0;
         }
         tempRef.Stop();
