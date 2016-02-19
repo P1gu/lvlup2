@@ -4,7 +4,27 @@ using System.Collections;
 public class MusicManager : MonoBehaviour
 {
 
-    public AudioClip[] clipList;
+    //public AudioClip[] clipList;
+
+    public AudioClip firstPhase;
+    [Range(0, 100)]
+    public int firstPhaseSoundLevel;
+
+    public AudioClip secondPhase;
+    [Range(0, 100)]
+    public int secondPhaseSoundLevel;
+
+    public AudioClip victory;
+    [Range(0, 100)]
+    public int victorySoundLevel;
+
+    public AudioClip gameOver;
+    [Range(0, 100)]
+    public int gameOverSoundLevel;
+
+    public AudioClip menu;
+    [Range(0, 100)]
+    public int menuSoundLevel;
 
     public AudioSource currentAudioSource;
     public AudioSource freeAudioSource;
@@ -13,7 +33,7 @@ public class MusicManager : MonoBehaviour
     public int soundLevel;
 
     public enum songs { FIRSTPHASE, SECONDPHASE, VICTORY, GAMEOVER, MENU, SILENCE };
-    private songs newSong;
+    private AudioClip currentClip;
 
     float wait;
     bool fadedOut1 = false;
@@ -24,7 +44,6 @@ public class MusicManager : MonoBehaviour
     {
         wait = Time.time;
         playFirstPhaseMusic();
-        soundLevel = 100;
 
         currentAudioSource.loop = true;
         freeAudioSource.loop = true;
@@ -41,7 +60,7 @@ public class MusicManager : MonoBehaviour
         if(Time.time - wait > 0 && !fadedOut1)
         {
             fadedOut1 = true;
-            crossFade(currentAudioSource, freeAudioSource, songs.FIRSTPHASE);
+            crossFade(currentAudioSource, freeAudioSource, firstPhaseSoundLevel, firstPhase);
         }
         /*if (Time.time - wait > 7 && !fadedOut2)
         {
@@ -53,38 +72,38 @@ public class MusicManager : MonoBehaviour
 
     public void playFirstPhaseMusic()
     {
-        crossFade(null, freeAudioSource, songs.FIRSTPHASE);
+        crossFade(null, freeAudioSource, firstPhaseSoundLevel, firstPhase);
     }
 
     public void playSecondPhaseMusic()
     {
-        crossFade(currentAudioSource, freeAudioSource, songs.SECONDPHASE);
+        crossFade(currentAudioSource, freeAudioSource, secondPhaseSoundLevel, secondPhase);
     }
 
     public void playMenuMusic()
     {
-        crossFade(currentAudioSource, freeAudioSource, songs.MENU);
+        crossFade(currentAudioSource, freeAudioSource, menuSoundLevel, menu);
     }
 
     public void playGameOverMusic()
     {
-        crossFade(currentAudioSource, freeAudioSource, songs.GAMEOVER);
+        crossFade(currentAudioSource, freeAudioSource, gameOverSoundLevel, gameOver);
     }
 
     public void playVictoryMusic()
     {
-        crossFade(currentAudioSource, freeAudioSource, songs.VICTORY);
+        crossFade(currentAudioSource, freeAudioSource, victorySoundLevel, victory);
     }
 
     public void fadeMusicOut()
     {
-        crossFade(currentAudioSource, null, songs.SILENCE);
+        StartCoroutine("fadeOut");
     }
 
-    private void crossFade(AudioSource endingSource, AudioSource startingSource, songs song, float fadeDuration = 10)
+    private void crossFade(AudioSource endingSource, AudioSource startingSource, int soundLevel, AudioClip clip)
     {
-        newSong = song;
-        if(endingSource != null)
+        currentClip = clip;
+        if (endingSource != null)
         {
             StartCoroutine("fadeOut");
         }
@@ -100,15 +119,15 @@ public class MusicManager : MonoBehaviour
         freeAudioSource = currentAudioSource;
         currentAudioSource = tempRef;
 
-        tempRef.clip = clipList[(int)newSong];
+        tempRef.clip = currentClip;
         tempRef.Play();
         tempRef.volume = 0;
         float start = Time.time;
 
         
-        while (tempRef.volume < soundLevel/100)
+        while (tempRef.volume < (float)soundLevel /100)
         {
-            tempRef.volume = Mathf.SmoothStep(0F, soundLevel/100, (Time.time - start) / fadeDuration);
+            tempRef.volume = Mathf.SmoothStep(0F, (float)soundLevel/100, (Time.time - start) / fadeDuration);
             yield return 0;
         }
     }
@@ -121,7 +140,7 @@ public class MusicManager : MonoBehaviour
         float tempVolume = tempRef.volume;
         while (tempRef.volume > 0F)
         {
-            tempRef.volume = Mathf.SmoothStep(soundLevel/100, 0F, (Time.time - start) / fadeDuration);
+            tempRef.volume = Mathf.SmoothStep((float)soundLevel /100, 0F, (Time.time - start) / fadeDuration);
             yield return 0;
         }
         tempRef.Stop();
