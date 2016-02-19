@@ -6,16 +6,5 @@ public class PlayableCharacter : CharacterBehaviour
 	protected void Update ()
 	{
 		base.Update ();
-
-		Move (Input.GetAxis ("Horizontal"));
-
-		if (Input.GetKeyDown (KeyCode.W)) {
-			Jump (1.0f);
-		}
-
-		if(Input.GetButton("Fire1"))
-		{
-			Action1 ();
-		}
 	}
 }

@@ -33,7 +33,7 @@ public class CharacterBehaviour : MonoBehaviour
 
 		animator.SetFloat ("Speed", Mathf.Abs(rb.velocity.x));
 
-		Debug.Log (animator);
+		//Debug.Log (animator);
 	}
 
 	public void Kill() {

@@ -17,8 +17,7 @@ public class GameManager : MonoBehaviour {
     public GameObject sbireGuerrier;
 
     public GameObject gui;
-    public GameObject modelTextGUI;
-
+    
     public GameObject spawnSbire;
 
     private EtatDuJeu etatDuJeu = EtatDuJeu.AvantPreparation;
@@ -71,7 +70,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Preparation() {
-        sbireEnCours = 0;
+        sbireEnCours = -1;
         int swap2 = -1;
         bool select = Input.GetKey(KeyCode.Space);
         bool left = Input.GetKeyDown(KeyCode.D);
@@ -119,14 +118,14 @@ public class GameManager : MonoBehaviour {
             // permet de mettre en evidence le personnage selectoinner
             Vector3 scale = sbire.transform.localScale;
             if (positionDeLaSelection == i) {
-                scale.x = 3;
-                scale.y = 3;
-                scale.z = 3;
-            }
-            else {
                 scale.x = 2;
                 scale.y = 2;
                 scale.z = 2;
+            }
+            else {
+                scale.x = 1;
+                scale.y = 1;
+                scale.z = 1;
             }
             sbire.transform.localScale = scale;
 
@@ -144,17 +143,17 @@ public class GameManager : MonoBehaviour {
     }
 
     private void EnCombat() {
-        //GererLeSbire();
+        GererLeSbire();
         
     }
 
     private void GererLeSbire() {
         lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Move(Input.GetAxis("Horizontal"));
         lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Jump(Input.GetKey("space") ? 1 : 0);
-        if (Input.GetButtonDown("fire1"))
-            lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Action1(Input.mousePosition);
-        if (Input.GetButtonDown("fire2"))
-            lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Action2(Input.mousePosition);
+        if (Input.GetButtonDown("Fire1"))
+            lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Action1();
+        if (Input.GetButtonDown("Fire2"))
+            lesSbiresDuLvl[sbireEnCours].GetComponent<PlayableCharacter>().Action2();
     }
 
     private void FinDuCombat() {
@@ -163,15 +162,8 @@ public class GameManager : MonoBehaviour {
     }
 
     public void unSbireEstMort() {
-        if (sbireEnCours < lesSbiresDuLvl.Count)
-        {
-            FairePopLeProchainSbire();
-            
-        }
-        else {
-            Application.LoadLevel("GameOver");
-        }
 
+        FairePopLeProchainSbire();
     }
 
     public void unAventurierEstMort() {
@@ -203,25 +195,34 @@ public class GameManager : MonoBehaviour {
     }
 
     private void FairePopLeProchainSbire() {
-        GameObject sbireEnCoursDeCombat = lesSbiresDuLvl[sbireEnCours];
-        placerSurLeSpawnSbire(sbireEnCoursDeCombat);
-
-        Invoke("unSbireEstMort", 5);
 
         sbireEnCours++;
+        if (sbireEnCours < lesSbiresDuLvl.Count)
+        {
+            GameObject sbireEnCoursDeCombat = lesSbiresDuLvl[sbireEnCours];
+            placerSurLeSpawnSbire(sbireEnCoursDeCombat);
+
+            //todo remove in prod
+            Invoke("unSbireEstMort", 5);
+        }
+        else {
+            Application.LoadLevel("GameOver");
+        }
+
+       
     }
 
     private void placerSurLeSpawnSbire(GameObject sbire) {
         sbire.transform.position = spawnSbire.transform.position;
         sbire.transform.rotation = spawnSbire.transform.rotation;
 
-        sbire.GetComponent<ThirdPersonUserControl>().enabled = true;
+        //sbire.GetComponent<ThirdPersonUserControl>().enabled = true;
         sbire.GetComponent<Rigidbody>().isKinematic = false;
 
         Vector3 scale = sbire.transform.localScale;
-        scale.x = 2;
-        scale.y = 2;
-        scale.z = 2;
+        scale.x = 1;
+        scale.y = 1;
+        scale.z = 1;
         sbire.transform.localScale = scale;
     }
 
@@ -243,12 +244,9 @@ public class GameManager : MonoBehaviour {
                     break;
             }
             lesSbiresDuLvl.Add(leSbire);
-            leSbire.GetComponent<ThirdPersonUserControl>().enabled = false;
+            //leSbire.GetComponent<ThirdPersonUserControl>().enabled = false;
             leSbire.GetComponent<Rigidbody>().isKinematic = true;
-            GameObject txt = Instantiate(modelTextGUI);
-            txt.GetComponent<Text>().text = "You "+(i+1);
-            txt.GetComponent<FollowObject>().objectToFollow = leSbire.transform;
-            txt.transform.parent = gui.transform;
+           
         }
     }
 
