@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour {
         GenererLesAventuriersDuLvl();
         GenererLesSbiresDuLvl();
 
-        EventManager.test();
+        EventManager.playPhase1Start();
         etatDuJeu =EtatDuJeu.Preparation;
     }
 
@@ -139,6 +139,7 @@ public class GameManager : MonoBehaviour {
             etatDuJeu = EtatDuJeu.EnCombat;
             sortirLesSbires();
             FairePopLeProchainSbire();
+            EventManager.playPhase2Start();
         }
     }
 
