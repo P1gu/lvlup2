@@ -44,20 +44,30 @@ public class CharacterBehaviour : MonoBehaviour
 		Destroy (this.gameObject, 10.0f);
 	}
 
+    private bool lastDirectionRight=true;
+    private bool changeDirection = false;
 	public void Move (float direction)
 	{
 		Vector3 velo = rb.velocity;
 		velo.x = direction * maxSpeed;
 		rb.velocity = velo;
 
+        changeDirection = false;
 		if (direction > 0.0f) {
+            if (!lastDirectionRight)
+                changeDirection = true;
 			this.direction = 1.0f;
-		} else if (direction < 0.0f) {
+            lastDirectionRight = true;
+        } else if (direction < 0.0f) {
+            if (lastDirectionRight)
+                changeDirection = true;
 			this.direction = -1.0f;
-		};
+            lastDirectionRight = false;
+        };
 
 		Vector3 scale = transform.localScale;
-		scale.x = this.direction;
+        if(changeDirection)
+		scale.x *= -1;
 		transform.localScale = scale;
 	}
 
