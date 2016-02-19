@@ -65,8 +65,8 @@ public class GameManager : MonoBehaviour {
         GenererLesAventuriersDuLvl();
         GenererLesSbiresDuLvl();
 
-
-        etatDuJeu=EtatDuJeu.Preparation;
+        EventManager.test();
+        etatDuJeu =EtatDuJeu.Preparation;
     }
 
     private void Preparation() {

@@ -3,6 +3,9 @@ using System.Collections;
 
 public class EventManager : MonoBehaviour {
 
+    public static void test() {
+        OnPhase1Start();
+    }
     public delegate void UnSbireEstMort();
     public static event UnSbireEstMort OnUnSbireEstMort;
 
