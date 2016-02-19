@@ -9,6 +9,7 @@ public class Sword : MonoBehaviour
 	private SpriteRenderer sr;
 
 	private bool swinging;
+	private float swinging_start;
 
 	public void Start() {
 		swinging = false;
@@ -16,17 +17,20 @@ public class Sword : MonoBehaviour
 	}
 
 	public void Update() {
-		if()
+		if (swinging) {
+
+		}
 	}
 
 	public void Swing() {
 		swinging = true;
+		swinging_start = Time.time;
+	}
 
-	}/*
-
-	OnTriggerEnter(Collider other) {
-		if(other.tag == "Character")
-
-	}*/
+	void OnTriggerEnter(Collider other) {
+		if (other.tag == "Character") {
+			other.GetComponent<CharacterBehaviour> ().health -= dammage;
+		}
+	}
 }
 
