@@ -5,6 +5,7 @@ public class GuerrierIA : MonoBehaviour {
 
     private PlayableCharacter pc;
 
+    private float timer;
 
     // Use this for initialization
     void Start()
@@ -15,6 +16,7 @@ public class GuerrierIA : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        
         GameObject sbire = GameObject.FindGameObjectWithTag("Sbire");
         if (sbire != null)
         {
@@ -29,9 +31,13 @@ public class GuerrierIA : MonoBehaviour {
             }
             int proba=Random.Range(0, 100);
             if (proba < 15) {
-                pc.Jump();
+               // pc.Jump();
             }
-            pc.Action1();
+            if (timer + 5 > Time.time)
+            {
+                timer = Time.time;
+                pc.Action1();
+            }
 
         }
     }

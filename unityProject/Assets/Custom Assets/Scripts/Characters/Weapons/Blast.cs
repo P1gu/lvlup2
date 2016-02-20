@@ -8,7 +8,7 @@ public class Blast : MonoBehaviour
 
 	void Start() {
 		Vector3 scale = transform.localScale;
-		scale.x = Direction;
+		scale.x = scale.x * Direction;
 		transform.localScale = scale;
 		Destroy (this.gameObject, blastTime);
 	}
@@ -20,7 +20,7 @@ public class Blast : MonoBehaviour
 	void OnTriggerEnter(Collider other)
 	{
 		Debug.Log (other.name);
-		if (this.transform.parent.tag == "Sbire" && other.tag == "Aventurier" || this.transform.parent.tag == "Aventurier" && other.tag == "Sbire") {
+		if (Owner.tag == "Sbire" && other.tag == "Aventurier" || Owner.tag == "Aventurier" && other.tag == "Sbire") {
 			other.GetComponent<CharacterBehaviour> ().health -= dammage;
 		}
 	}

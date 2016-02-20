@@ -117,11 +117,11 @@ public class CharacterBehaviour : MonoBehaviour
 
 	public void Action1 ()
 	{
-		actions.Action1 ();
+        if (!dead) { actions.Action1(); }
 	}
 
 	public void Action2 ()
 	{
-		actions.Action2 ();
+        if (!dead) { actions.Action2(); }
 	}
 }

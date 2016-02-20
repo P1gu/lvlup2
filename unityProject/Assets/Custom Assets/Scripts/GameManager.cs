@@ -296,7 +296,9 @@ public class GameManager : MonoBehaviour {
     }
 
     private void placerSurLeSpawnSbire(GameObject sbire) {
-        sbire.transform.position = spawnSbire.transform.position;
+        Vector3 v3 = spawnSbire.transform.position;
+        v3.y += 5;
+        sbire.transform.position = v3;
         sbire.transform.rotation = spawnSbire.transform.rotation;
 
         Vector3 scale = sbire.transform.localScale;
