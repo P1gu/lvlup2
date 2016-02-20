@@ -40,7 +40,7 @@ public class CharacterBehaviour : MonoBehaviour
             
 		} else if (health <= 0 && !dead) {
 			Kill ();
-		}
+        }
 			
 		animator.SetFloat ("Speed", Mathf.Abs(rb.velocity.x));
 		animator.SetFloat ("Vertical_Speed", rb.velocity.y);

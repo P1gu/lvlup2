@@ -9,8 +9,15 @@ public class GameManager : MonoBehaviour {
         AvantPreparation,Preparation, EnCombat, FinDuCombat
     }
 
+    public float scalePersonnage = 2.5f;
+
     public int maxSbiresParLvl = 10;
     public int nbrDeSbireAuLvl1 = 4;
+
+    public Text txt_niveau;
+    public Text txt_sbireEnVie;
+    public Text txt_tempRestant;
+    public Text txt_score;
 
     public GameObject sbireArcher;
     public GameObject sbireMage;
@@ -33,7 +40,7 @@ public class GameManager : MonoBehaviour {
 
     private EtatDuJeu etatDuJeu = EtatDuJeu.AvantPreparation;
 
-    public int tempsDeLaPreparationEnSec = 4;
+    public int tempsDeLaPreparationEnSec = 30;
     private float tempRestantPrepartion=0;
 
     private int lvl = 1;
@@ -46,7 +53,9 @@ public class GameManager : MonoBehaviour {
     private int sbireEnCours = 0;
     private List<GameObject> lesSbiresDuLvl = new List<GameObject>();
 
-    private int nbrDeVieTotalAventurier = 1; 
+    private int nbrDeVieTotalAventurier = 1;
+
+    private int score = 0;
 
 	void Start () {
         EventManager.OnUnAventurierEstMort += unAventurierEstMort;
@@ -69,6 +78,15 @@ public class GameManager : MonoBehaviour {
                 FinDuCombat();
                 break;
         }
+
+        mettreAjourGUI();
+    }
+
+    private void mettreAjourGUI() {
+        txt_score.text = ""+score;
+        txt_tempRestant.text = "" + (int)tempRestantPrepartion;
+        txt_sbireEnVie.text = "" + (lesSbiresDuLvl.Count - sbireEnCours-1);
+        txt_niveau.text = ""+lvl;
     }
 
     private void AvantPreparation() {
@@ -77,6 +95,8 @@ public class GameManager : MonoBehaviour {
         GenererLesAventuriersDuLvl();
         GenererLesSbiresDuLvl();
         afficherLaProchaineVague();
+
+        EventManager.playPhase1Start();
 
         sbireEnCours = -1;
         aventurierEnCours = 0;
@@ -91,8 +111,6 @@ public class GameManager : MonoBehaviour {
         bool right = Input.GetKeyDown(KeyCode.D);
         bool left = Input.GetKeyDown(KeyCode.A);
         bool skip = Input.GetKey(KeyCode.Q);
-
-
 
         if (skip) {
             tempRestantPrepartion = 0;
@@ -139,14 +157,14 @@ public class GameManager : MonoBehaviour {
             // permet de mettre en evidence le personnage selectoinner
             Vector3 scale = sbire.transform.localScale;
             if (positionDeLaSelection == i) {
-                scale.x = -3;
-                scale.y = 3;
-                scale.z = 3;
+                scale.x = -scalePersonnage-1;
+                scale.y = scalePersonnage+1;
+                scale.z = scalePersonnage+1;
             }
             else {
-                scale.x = -2;
-                scale.y = 2;
-                scale.z = 2;
+                scale.x = -scalePersonnage;
+                scale.y = scalePersonnage;
+                scale.z = scalePersonnage;
             }
             sbire.transform.localScale = scale;
 
@@ -173,7 +191,7 @@ public class GameManager : MonoBehaviour {
             Vector3 v3= positionPremierBulle.transform.position;
             v3.y += offset * 3;
             bulle.transform.position = v3;
-            offset++;
+            offset--;
         }
     }
 
@@ -185,6 +203,7 @@ public class GameManager : MonoBehaviour {
             sortirLesSbires();
             FairePopLeProchainSbire();
             FairePopLeProchainAventurier();
+
             EventManager.playPhase2Start();
         }
     }
@@ -215,12 +234,13 @@ public class GameManager : MonoBehaviour {
     }
 
     public void unSbireEstMort() {
-
+        lesSbiresDuLvl[sbireEnCours].tag = "Untagged";
         FairePopLeProchainSbire();
     }
 
     public void unAventurierEstMort() {
         aventurierEnCours++;
+        score += 154;
         if (aventurierEnCours < lesAventuriersDuLvl.Count)
         {// il y a encore des ennemis
             FairePopLeProchainAventurier();
@@ -259,6 +279,7 @@ public class GameManager : MonoBehaviour {
         if (sbireEnCours < lesSbiresDuLvl.Count)
         {
             GameObject sbireEnCoursDeCombat = lesSbiresDuLvl[sbireEnCours];
+            sbireEnCoursDeCombat.tag = "Sbire";
             placerSurLeSpawnSbire(sbireEnCoursDeCombat);
         }
         else {
@@ -274,9 +295,9 @@ public class GameManager : MonoBehaviour {
 
         sbire.GetComponent<Rigidbody>().isKinematic = false;
 
-        scale.y = 2;
-        scale.x = 2;
-        scale.z = 2;
+        scale.y = scalePersonnage;
+        scale.x = scalePersonnage;
+        scale.z = scalePersonnage;
         sbire.transform.localScale = scale;
 
     }
@@ -291,9 +312,9 @@ public class GameManager : MonoBehaviour {
 
         sbire.GetComponent<Rigidbody>().isKinematic = false;
 
-        scale.y = 2;
-        scale.x = 2;
-        scale.z = 2;
+        scale.y = scalePersonnage;
+        scale.x = scalePersonnage;
+        scale.z = scalePersonnage;
         sbire.transform.localScale = scale;
 
     }
@@ -301,7 +322,7 @@ public class GameManager : MonoBehaviour {
     private void GenererLesSbiresDuLvl() {
         lesSbiresDuLvl = new List<GameObject>();
         GameObject leSbire =null ;
-        for (int i = 0; i < (nbrDeSbireAuLvl1 + lvl - 1) % maxSbiresParLvl;i++) {
+        for (int i = 0; i <( (nbrDeSbireAuLvl1 + lvl - 1) % maxSbiresParLvl)+1;i++) {
             int type= Random.Range(0, 3);
             switch (type) {
                 case 0:
