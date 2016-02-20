@@ -6,7 +6,7 @@ using UnityStandardAssets.Characters.ThirdPerson;
 public class GameManager : MonoBehaviour {
     private enum EtatDuJeu
     {
-        AvantPreparation,Preparation, EnCombat, FinDuCombat
+        AvantPreparation, Preparation, EnCombat, FinDuCombat
     }
 
     public float scalePersonnage = 2.5f;
@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour {
     public GameObject positionPremierBulle;
 
     public GameObject gui;
-    
+
     public GameObject spawnSbire;
 
     public GameObject spawnAventurier;
@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour {
     private EtatDuJeu etatDuJeu = EtatDuJeu.AvantPreparation;
 
     public int tempsDeLaPreparationEnSec = 30;
-    private float tempRestantPrepartion=0;
+    private float tempRestantPrepartion = 0;
 
     private int lvl = 1;
 
@@ -57,13 +57,13 @@ public class GameManager : MonoBehaviour {
 
     private int score = 0;
 
-	void Start () {
+    void Start() {
         EventManager.OnUnAventurierEstMort += unAventurierEstMort;
         EventManager.OnUnSbireEstMort += unSbireEstMort;
     }
-	
-	void Update () {
-       
+
+    void Update() {
+
         switch (etatDuJeu) {
             case EtatDuJeu.AvantPreparation:
                 AvantPreparation();
@@ -83,10 +83,10 @@ public class GameManager : MonoBehaviour {
     }
 
     private void mettreAjourGUI() {
-        txt_score.text = ""+score;
+        txt_score.text = "" + score;
         txt_tempRestant.text = "" + (int)tempRestantPrepartion;
-        txt_sbireEnVie.text = "" + (lesSbiresDuLvl.Count - sbireEnCours-1);
-        txt_niveau.text = ""+lvl;
+        txt_sbireEnVie.text = "" + (lesSbiresDuLvl.Count - sbireEnCours - 1);
+        txt_niveau.text = "" + lvl;
     }
 
     private void AvantPreparation() {
@@ -101,8 +101,16 @@ public class GameManager : MonoBehaviour {
         sbireEnCours = -1;
         aventurierEnCours = 0;
         EventManager.playPhase1Start();
-        etatDuJeu =EtatDuJeu.Preparation;
+        etatDuJeu = EtatDuJeu.Preparation;
     }
+
+    private bool keyDownLeft() {
+        return true;
+    }
+    private bool keyDownRight() {
+        return true;
+    }
+
 
     private void Preparation() {
         
